@@ -15,6 +15,7 @@ pipeline {
             steps {
                 sh '''
                 docker rm -f backend1 backend2 || true
+
                 docker run -d --name backend1 backend-app
                 docker run -d --name backend2 backend-app
                 '''
@@ -27,14 +28,14 @@ pipeline {
                 docker rm -f nginx-lb || true
 
                 docker run -d \
-                  --name nginx-lb \
-                  -p 8081:80 \
-                  -v ${WORKSPACE}/nginx:/etc/nginx/conf.d \
-                  --link backend1 \
-                  --link backend2 \
-                  nginx:latest
+                --name nginx-lb \
+                -p 8081:80 \
+                --link backend1 \
+                --link backend2 \
+                nginx:latest
                 '''
             }
         }
+
     }
 }
