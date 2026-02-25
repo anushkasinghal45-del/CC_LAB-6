@@ -3,15 +3,11 @@ pipeline {
 
     stages {
 
-        stage('Checkout SCM') {
-            steps {
-                checkout scm
-            }
-        }
-
         stage('Build Backend Image') {
             steps {
-                sh 'docker build -t backend-app backend'
+                sh '''
+                docker build -t backend-app backend
+                '''
             }
         }
 
@@ -29,22 +25,26 @@ pipeline {
             steps {
                 sh '''
                 docker rm -f nginx-lb || true
+
+                # Debug (optional but useful)
+                ls -la
+                ls -la nginx
+
                 docker run -d \
                   --name nginx-lb \
                   -p 8081:80 \
-                  -v $WORKSPACE/nginx/default.conf:/etc/nginx/conf.d/default.conf \
+                  -v $PWD/nginx/default.conf:/etc/nginx/conf.d/default.conf \
                   --link backend1 \
                   --link backend2 \
                   nginx:latest
                 '''
             }
         }
-
     }
 
     post {
-        success {
-            echo 'Pipeline executed successfully. NGINX load balancer is running.'
+        always {
+            echo "Pipeline executed."
         }
     }
 }
