@@ -1,3 +1,4 @@
+
 pipeline {
     agent any
 
@@ -26,7 +27,7 @@ pipeline {
                 docker run -d \
                   --name nginx-lb \
                   -p 8081:80 \
-                  -v $(pwd)/nginx/default.conf:/etc/nginx/conf.d/default.conf \
+                  -v $PWD/nginx/default.conf:/etc/nginx/conf.d/default.conf \
                   --link backend1 \
                   --link backend2 \
                   nginx:latest
