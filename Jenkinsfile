@@ -5,9 +5,7 @@ pipeline {
 
         stage('Build Backend Image') {
             steps {
-                sh '''
-                docker build -t backend-app backend
-                '''
+                sh 'docker build -t backend-app CC_LAB-6/backend'
             }
         }
 
@@ -21,30 +19,19 @@ pipeline {
             }
         }
 
-        stage('Deploy NGINX Load Balancer') {
+        stage('Deploy NGINX') {
             steps {
                 sh '''
                 docker rm -f nginx-lb || true
-
-                # Debug (optional but useful)
-                ls -la
-                ls -la nginx
-
                 docker run -d \
                   --name nginx-lb \
                   -p 8081:80 \
-                  -v $PWD/nginx/default.conf:/etc/nginx/conf.d/default.conf \
+                  -v $(pwd)/CC_LAB-6/nginx/default.conf:/etc/nginx/conf.d/default.conf \
                   --link backend1 \
                   --link backend2 \
                   nginx:latest
                 '''
             }
-        }
-    }
-
-    post {
-        always {
-            echo "Pipeline executed."
         }
     }
 }
